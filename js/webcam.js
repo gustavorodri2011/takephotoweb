@@ -1,3 +1,5 @@
+const canvas = document.querySelector("#canvas");
+
 $(document).ready(function () {
   $("#snap").hide();
 
@@ -13,18 +15,19 @@ $(document).ready(function () {
       // Obtener acceso a la cámara web
       getCamara();
     }
-  }else{
-    TriggerAlertBasic(
-      "Error",
-      "La dirección Url no es correcta.",
-      "error"
-    );
+  } else {
+    TriggerAlertBasic("Error", "La dirección Url no es correcta.", "error");
   }
-  
+
+  var myModal = new bootstrap.Modal(document.getElementById("exampleModal"), {
+    keyboard: false,
+    backdrop: false,
+  });
   $("#snap").click(function () {
     takePhoto();
     $("#sound-file")[0].play();
-    $("#exampleModal").modal("show");
+    myModal.show();
+    //$("#exampleModal").modal("show");
   });
 
   $("#close_modal").click(function (e) {
@@ -44,19 +47,40 @@ $(document).ready(function () {
     return false;
   }
 
+  // $("#formImagen").submit(function (e) {
+  //   e.preventDefault();
+
+  //   var dataURL = canvas.toDataURL();
+  //   var ntramite=GetValueParam();
+  //   const url="https://localhost:7054/api/photo";
+  //   var formData=new FormData();
+
+  //   formData.append("tramite",ntramite);
+  //   formData.append("imagen", dataURL);
+
+  //   var xhr=new XMLHttpRequest();
+  //   xhr.open("POST",url);
+  //   xhr.send(formData);
+  // });
+
+  $("#btn_send").click(function (e) {
+    e.preventDefault();
+    sendImage();
+  });
+
   var canvas = document.getElementById("canvas");
   var context = canvas.getContext("2d");
   // dibujar en el canvas
   context.fillRect(10, 10, 50, 50);
-  $("#download-button").click(function (e) {
-    e.preventDefault();
-    var dataURL = canvas.toDataURL("image/jpeg");
-    // crear un enlace para descargar la imagen
-    var link = document.createElement("a");
-    link.download = "imagen.jpeg";
-    link.href = dataURL;
-    link.click();
-  });
+  //   $("#download-button").click(function (e) {
+  //     e.preventDefault();
+  //     var dataURL = canvas.toDataURL("image/jpeg");
+  //     // crear un enlace para descargar la imagen
+  //     var link = document.createElement("a");
+  //     link.download = "imagen.jpeg";
+  //     link.href = dataURL;
+  //     link.click();
+  //   });
 });
 
 function checkParamStatus(param) {
@@ -130,20 +154,30 @@ function takePhoto() {
   canvas.height = video.videoHeight;
   var context = canvas.getContext("2d");
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
+  var ntramite = GetValueParam();
+  $("#ntramiteHiden").val(ntramite);
+  console.log(ntramite);
 }
 
 function sendImage() {
-  const canvas = document.querySelector("#canvas");
-  const dataURL = canvas.toDataURL();
+  var canvas = document.getElementById("canvas");
+  var dataURL = canvas.toDataURL();
+  //Convert to Base64 string
+  var base64 = getBase64StringFromDataURL(dataURL);
+  var ntramite = GetValueParam();
 
-  const formData = new FormData();
-  formData.append("image", dataURL);
-
-  fetch("https://api.example.com/upload-image", {
+  fetch("https://localhost:7054/api/photo", {
     method: "POST",
-    body: formData,
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({TramiteId:ntramite,ImageData: base64})
   })
-    .then((response) => response.json())
+    .then((response) => {
+      if(response.status=="200"){
+        TriggerAlertBasic("Éxito", "Imagen se guardó satisfactoriamente.", "success") 
+    }})  
     .then((data) => console.log(data))
-    .catch((error) => console.error(error));
+    .catch((error) => console.log(error));
 }
+
+const getBase64StringFromDataURL = (dataURL) =>
+    dataURL.replace('data:', '').replace(/^.+,/, '');

@@ -4,7 +4,7 @@
         <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1" >
             <title>Foto web</title>
-            <link rel="shortcut icon" type="image/x-icon" href="img/camara_ico.ico">
+            <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
             <link href="css/bootstrap.min.css" rel="stylesheet">
             <link href="css/bootstrap-icons.css" rel="stylesheet">
             <link href="css/sweetalert2.min.css" rel="stylesheet">
@@ -13,7 +13,7 @@
           </head>
     </head>
     <body>
-      <div class="container">
+      <div id="container" class="container">
         <div class="row text-center">
           <div class="col">
             <p class="fs-1 ">Fotografiar</p>
@@ -27,7 +27,7 @@
           </div>         
         </div>
         <div class="row text-center">
-          <div class="col"><button id="snap" class="btn btn-warning btn-lg">
+          <div class="col"><button id="snap" class="btn btn-warning btn-lg animate__animated animate__fadeInDown">
             <i class="bi bi-camera-fill"></i> Tomar foto</button>
           </div>
         </div>
@@ -48,10 +48,6 @@
         <h5 class="modal-title">Previsualización</h5>
         <button type="button" id="close_modal" class="btn_close_modal"><i class="bi bi-x-lg"></i></button>
       </div>
-      <!-- <div class="pt-3 text-center">
-        <p>Previsualización</p>
-        <button type="button" class="btn-close" aria-label="Close"></button>
-      </div> -->
       <div class="modal-body">
         <canvas id="canvas"></canvas>
       </div>
@@ -62,11 +58,13 @@
     </div>
   </div>
 </div>
+
 <audio id="sound-file" src="sounds/camara_snap.mp3"></audio>
   
         <script src="js/jquery.min.js" type="text/javascript"></script>
         <script src="js/bootstrap.bundle.min.js" type="text/javascript"></script>
         <script src="js/sweetalert2.min.js" type="text/javascript"></script>
+        <script src="js/jquery.blockUI.js" type="text/javascript"></script>
         <script src="js/webcam.js" type="text/javascript"></script>
     </body>
 </html>

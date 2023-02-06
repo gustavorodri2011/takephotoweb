@@ -1,19 +1,26 @@
 $(document).ready(function () {
   $("#snap").hide();
-  var param = getParam();
-  if (param === undefined || param === "") {
-    Swal.fire(
-      "URL Incorrecta",
-      "La dirección web del navegador no es correcta.<br>La operación será cancelada",
+
+  if (CheckUrlWellFormed()) {
+    var param = GetValueParam();
+    if (!checkParamStatus(param)) {
+      TriggerAlertBasic(
+        "Error",
+        "Parametro ntramite no esta presente en la url",
+        "error"
+      );
+    } else {
+      // Obtener acceso a la cámara web
+      getCamara();
+    }
+  }else{
+    TriggerAlertBasic(
+      "Error",
+      "La dirección Url no es correcta.",
       "error"
     );
-  } else {
-    console.log("Nro tramite: ", param);   
-      // Obtener acceso a la cámara web
-    getCamara();
-   
   }
-
+  
   $("#snap").click(function () {
     takePhoto();
     $("#sound-file")[0].play();
@@ -28,6 +35,14 @@ $(document).ready(function () {
     e.preventDefault();
     downloadImage();
   });
+
+  function CheckUrlWellFormed() {
+    const currentUrl = window.location.href;
+    if (currentUrl.includes("ntramite=")) {
+      return true;
+    }
+    return false;
+  }
 
   var canvas = document.getElementById("canvas");
   var context = canvas.getContext("2d");
@@ -44,19 +59,43 @@ $(document).ready(function () {
   });
 });
 
+function checkParamStatus(param) {
+  if (param === undefined || param === "") {
+    return false;
+  }
+  return true;
+}
+
+function TriggerAlertBasic(title, description, icon) {
+  Swal.fire(
+    title,
+    description,
+    icon
+    // --TODO-- Implementar funcion para cerrar navegador web
+  );
+}
+
+function TriggerAlertWithConfirmation(title, description, icon) {
+  Swal.fire(
+    title,
+    description,
+    icon
+    // --TODO-- Implementar funcion para cerrar navegador web
+  );
+}
 
 function getCamara() {
-  // $.blockUI({ message: "<h1>Obtener acceso a la cámara web...</h1>" });  
-  $('#container').block({ 
-    message: '<h5>Obteniendo acceso a la cámara web...</h5>'
-});   
+  // $.blockUI({ message: "<h1>Obtener acceso a la cámara web...</h1>" });
+  $("#container").block({
+    message: "<h5>Obteniendo acceso a la cámara web...</h5>",
+  });
   navigator.mediaDevices
     .getUserMedia({ video: true })
     .then(function (stream) {
       // Asignar el stream de la cámara web a un elemento <video>
       var video = document.getElementById("webcam");
       video.srcObject = stream;
-      video.play(); 
+      video.play();
       $("#snap").show();
     })
     .catch(function (error) {
@@ -67,23 +106,21 @@ function getCamara() {
         `No se puede acceder a la cámara: <br> 
         Por favor verifique que <br>
        - Se encuentre conectada. <br>
-       - Otro programa la tenga en uso.`
-       ,
+       - Otro programa la tenga en uso.`,
         "error"
       );
       $("#snap").hide();
     });
-    $('#container').unblock();
+  $("#container").unblock();
 }
 
-function getParam() {
+function GetValueParam() {
   // Obtiene la URL actual
   const currentUrl = window.location.href;
   // Crea un objeto URLSearchParams a partir de la URL actual
   const urlParams = new URLSearchParams(window.location.search);
   // Obtiene el valor de un parámetro específico (por ejemplo, "param")
-  const paramValue = urlParams.get("ntramite");
-  return paramValue;
+  return urlParams.get("ntramite");
 }
 
 function takePhoto() {
@@ -93,4 +130,20 @@ function takePhoto() {
   canvas.height = video.videoHeight;
   var context = canvas.getContext("2d");
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
+}
+
+function sendImage() {
+  const canvas = document.querySelector("#canvas");
+  const dataURL = canvas.toDataURL();
+
+  const formData = new FormData();
+  formData.append("image", dataURL);
+
+  fetch("https://api.example.com/upload-image", {
+    method: "POST",
+    body: formData,
+  })
+    .then((response) => response.json())
+    .then((data) => console.log(data))
+    .catch((error) => console.error(error));
 }

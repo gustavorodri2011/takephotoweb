@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"
+      integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+
+    <title>Hello, world!</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <form method="POST" enctype="multipart/form-data" id="fileUploadForm">
+            <br />
+            Tramite:
+            <input type="text" name="ntramite" id="ntramite" /><br /><br />
+            <input type="file" name="files" id="file-input" /><br /><br />
+            <input type="submit" value="Submit" id="btnSubmit" />
+          </form>
+        </div>
+      </div>
+      <br /><br /><hr>
+      <div class="row">
+        <div class="col">
+          <input type="text" name="ntramitedel" id="ntramitedel" />
+          <input type="button" value="Delete" id="btnDelete" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Optional JavaScript; choose one of the two! -->
+
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
+
+    <script>
+      $(document).ready(function () {
+        $("#btnSubmit").click(function (event) {
+          //stop submit the form, we will post it manually.
+          event.preventDefault();
+
+          // Get form
+          var form = $("#fileUploadForm")[0];
+
+          // Create an FormData object
+          var data = new FormData(form);
+
+          data.append("Tramite", $("#ntramite").val());
+          data.append("FormFile", $("#file-input")[0].files[0]);
+
+          // disabled the submit button
+          $("#btnSubmit").prop("disabled", true);
+
+          $.ajax({
+            type: "POST",
+            enctype: "multipart/form-data",
+            url: "https://localhost:7149/api/image",
+            data: data,
+            processData: false,
+            contentType: false,
+            cache: false,
+            timeout: 600000,
+            success: function (data) {
+              alert("Imagen guardada ok.");
+              $("#btnSubmit").prop("disabled", false);
+            },
+            error: function (e) {
+              alert(e.responseText);
+              $("#btnSubmit").prop("disabled", false);
+            },
+          });
+        });
+
+        $("#btnDelete").click(function (e) {
+          e.preventDefault();
+         var ntramite=  $("#ntramitedel").val();
+          alert(ntramite);
+          $.ajax({
+            type: "DELETE",
+            url: `https://localhost:7149/api/image/${ntramite}`,
+            dataType: "json",
+            success: function (response) {
+              alert("Imagen eliminada ok.");
+            }
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

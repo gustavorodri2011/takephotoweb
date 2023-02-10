@@ -31,9 +31,9 @@ $(document).ready(function () {
     $("#exampleModal").modal("hide");
   });
 
-  $("#btn_save").click(function (e) {
+  $("#btn__save").click(function (e) {
     e.preventDefault();
-    downloadImage();
+    sendImage(GetValueParam());
   });
 
   function CheckUrlWellFormed() {
@@ -132,18 +132,15 @@ function takePhoto() {
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
 }
 
-function sendImage() {
+function sendImage(ntramite) {
   const canvas = document.querySelector("#canvas");
-  const dataURL = canvas.toDataURL();
+  //const dataURL = canvas.toDataURL();
 
-  const formData = new FormData();
-  formData.append("image", dataURL);
+  canvas.toBlob( (blob) => {
+    const file = new File( [ blob ], `${ntramite}.jpg` );
+    const dT = new DataTransfer();
+    dT.items.add( file );
+    document.querySelector( "input" ).files = dT.files;
+  } );
 
-  fetch("https://api.example.com/upload-image", {
-    method: "POST",
-    body: formData,
-  })
-    .then((response) => response.json())
-    .then((data) => console.log(data))
-    .catch((error) => console.error(error));
 }

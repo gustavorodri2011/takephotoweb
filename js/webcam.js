@@ -159,39 +159,17 @@ function takePhoto() {
   console.log(ntramite);
 }
 
-<<<<<<< HEAD
 function sendImage(ntramite) {
   const canvas = document.querySelector("#canvas");
   //const dataURL = canvas.toDataURL();
 
-  canvas.toBlob( (blob) => {
-    const file = new File( [ blob ], `${ntramite}.jpg` );
+  canvas.toBlob((blob) => {
+    const file = new File([blob], `${ntramite}.jpg`);
     const dT = new DataTransfer();
-    dT.items.add( file );
-    document.querySelector( "input" ).files = dT.files;
-  } );
-
-=======
-function sendImage() {
-  var canvas = document.getElementById("canvas");
-  var dataURL = canvas.toDataURL();
-  //Convert to Base64 string
-  var base64 = getBase64StringFromDataURL(dataURL);
-  var ntramite = GetValueParam();
-
-  fetch("https://localhost:7054/api/photo", {
-    method: "POST",
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({TramiteId:ntramite,ImageData: base64})
-  })
-    .then((response) => {
-      if(response.status=="200"){
-        TriggerAlertBasic("Éxito", "Imagen se guardó satisfactoriamente.", "success") 
-    }})  
-    .then((data) => console.log(data))
-    .catch((error) => console.log(error));
->>>>>>> 4c3148851e5ee2aa28ba4c6eb95cac2a563d48ae
+    dT.items.add(file);
+    document.querySelector("input").files = dT.files;
+  });
 }
 
 const getBase64StringFromDataURL = (dataURL) =>
-    dataURL.replace('data:', '').replace(/^.+,/, '');
+  dataURL.replace("data:", "").replace(/^.+,/, "");
